@@ -14,6 +14,7 @@ Gym-DWH je projekat u sklopu predmeta 'Skladišta podataka' na Elektrotehničkom
 ## Napomene: 
 - za ETL proces korišen Microsoft Visual Studio 2019 sa uključenom SSIS ekstenzijom
 - skladište se kreira u SSMS - LOKALNO
+- ETL se nalazi na putanji: GymDataWarehouse/GymDWH_ETL/GymDWH_ETL.sln
 - Prilikom pokretanja ETL procesa potrebno je izvršiti **sljedeće korake**:
     1. Otvoriti SSMS i *Gym* bazu podataka
     2. U Visual Studiu promijeniti ime servera na ime vašeg lokalnog servera (dupli klik na željeni connection manager)
