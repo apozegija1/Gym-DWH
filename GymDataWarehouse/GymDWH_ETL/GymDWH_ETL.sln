@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{159641D6-6404-4A2A-AE62-294DE0FE8301}") = "GymDWH_ETL", "GymDWH_ETL\GymDWH_ETL.dtproj", "{48432E79-54ED-4ADD-BFE5-02DF34F32047}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Development|Default = Development|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48432E79-54ED-4ADD-BFE5-02DF34F32047}.Development|Default.ActiveCfg = Development
+		{48432E79-54ED-4ADD-BFE5-02DF34F32047}.Development|Default.Build.0 = Development
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4B605FC9-C5B7-4DD4-9EF4-E1BD7BDEE834}
+	EndGlobalSection
+EndGlobal
