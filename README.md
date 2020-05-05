@@ -21,7 +21,7 @@ Gym-DWH je projekat u sklopu predmeta 'Skladišta podataka' na Elektrotehničkom
     3. Kliknuti "Test connection"
     4. Pokrenuti prvo paket createDW, a zatim importDW (*bitno*)
 
-** Projekat implementirali:
+**Projekat implementirali:
 
 - Amra Požegija, 57-ST
 - Haris Kičin, 33-ST
