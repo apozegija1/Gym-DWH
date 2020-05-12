@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Package"
   DTS:PackageType="5"
-  DTS:VersionBuild="11"
-  DTS:VersionGUID="{FF021210-8A3B-4061-BE67-DFBCAB495161}">
+  DTS:VersionBuild="15"
+  DTS:VersionGUID="{32B73EC7-831C-481B-B5F1-41BF36899319}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -82,7 +82,7 @@
       DTS:LocaleID="-1"
       DTS:ObjectName="Alter FactUsage"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="4">
+      DTS:ThreadHint="2">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -99,7 +99,7 @@
       DTS:LocaleID="-1"
       DTS:ObjectName="Create DimBranch"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="1">
+      DTS:ThreadHint="3">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -116,7 +116,7 @@
       DTS:LocaleID="-1"
       DTS:ObjectName="Create DimCourse"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="4">
+      DTS:ThreadHint="1">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -133,7 +133,7 @@
       DTS:LocaleID="-1"
       DTS:ObjectName="Create DimCustomer"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="5">
+      DTS:ThreadHint="2">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -150,7 +150,7 @@
       DTS:LocaleID="-1"
       DTS:ObjectName="Create DimEquipment"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="3">
+      DTS:ThreadHint="5">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -167,7 +167,7 @@
       DTS:LocaleID="-1"
       DTS:ObjectName="Create DimMaintenance"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="2">
+      DTS:ThreadHint="0">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -184,7 +184,7 @@
       DTS:LocaleID="-1"
       DTS:ObjectName="Create DimTime"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="0">
+      DTS:ThreadHint="4">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
@@ -206,7 +206,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{5D246635-5522-4275-8C2A-492538FCCB21}"
-          SQLTask:SqlStatementSource="CREATE TABLE dbo.Fact_Maintenance &#xA;(&#xA;&#x9;MainKey&#x9;&#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;EquipmentKey&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;BranchKey &#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;TimeKey&#x9;&#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;DimMaintenanceKey&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;Costs&#x9;&#x9;&#x9;INT&#x9;&#x9;&#x9;NULL,&#xA;&#x9;MaintenanceNo&#x9;INT&#x9;&#x9;&#x9;NULL,&#xA;&#x9;CONSTRAINT PK_FactMaintenance PRIMARY KEY (MainKey)&#xA;);&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="CREATE TABLE dbo.Fact_Maintenance &#xA;(&#xA;&#x9;MainKey&#x9;&#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL IDENTITY(1,1),&#xA;&#x9;EquipmentKey&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;BranchKey &#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;TimeKey&#x9;&#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;DimMaintenanceKey&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;Costs&#x9;&#x9;&#x9;INT&#x9;&#x9;&#x9;NULL,&#xA;&#x9;MaintenanceNo&#x9;INT&#x9;&#x9;&#x9;NULL,&#xA;&#x9;CONSTRAINT PK_FactMaintenance PRIMARY KEY (MainKey)&#xA;);&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -223,7 +223,7 @@
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{5D246635-5522-4275-8C2A-492538FCCB21}"
-          SQLTask:SqlStatementSource="CREATE TABLE dbo.Fact_Sales&#xA;(&#xA;&#x9;SalesKey&#x9;&#x9;&#x9;INT   IDENTITY(1,1) NOT NULL,&#xA;&#x9;MainKey&#x9;&#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;CourseKey&#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;BranchKey &#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;TimeKey&#x9;&#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;CustomerKey&#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;KMSales&#x9;&#x9;&#x9;INT&#x9;&#x9;&#x9;NULL,&#xA;&#x9;CONSTRAINT PK_FactSales PRIMARY KEY (SalesKey)&#xA;);&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="CREATE TABLE dbo.Fact_Sales&#xA;(&#xA;&#x9;SalesKey&#x9;&#x9;&#x9;INT   IDENTITY(1,1) NOT NULL,&#xA;&#x9;CourseKey&#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;BranchKey &#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;TimeKey&#x9;&#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;CustomerKey&#x9;&#x9;INT&#x9;&#x9;&#x9;NOT NULL,&#xA;&#x9;KMSales&#x9;&#x9;&#x9;INT&#x9;&#x9;&#x9;NULL,&#xA;&#x9;CONSTRAINT PK_FactSales PRIMARY KEY (SalesKey)&#xA;);&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -235,12 +235,12 @@
       DTS:LocaleID="-1"
       DTS:ObjectName="Create FactUsage"
       DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
-      DTS:ThreadHint="4">
+      DTS:ThreadHint="2">
       <DTS:Variables />
       <DTS:ObjectData>
         <SQLTask:SqlTaskData
           SQLTask:Connection="{5D246635-5522-4275-8C2A-492538FCCB21}"
-          SQLTask:SqlStatementSource="CREATE TABLE dbo.Fact_Usage&#xA;(&#xA;&#x9;UsageKey&#x9;&#x9;INT&#x9;&#x9;NOT NULL IDENTITY(1,1),&#xA;&#x9;CustomerKey&#x9;&#x9;INT&#x9;&#x9;NOT NULL,&#xA;&#x9;BranchKey&#x9;&#x9;INT&#x9;&#x9;NOT NULL,&#xA;&#x9;CourseKey&#x9;&#x9;INT&#x9;&#x9;NOT NULL,&#xA;&#x9;TimeKey&#x9;&#x9;&#x9;INT&#x9;&#x9;NOT NULL,&#xA;&#x9;TotalUsage&#x9;&#x9;INT&#x9;&#x9;NOT NULL,&#xA;&#x9;CONSTRAINT PK_Usage&#x9;PRIMARY KEY (UsageKey)&#xA;);&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+          SQLTask:SqlStatementSource="CREATE TABLE dbo.Fact_Usage&#xA;(&#xA;&#x9;UsageKey&#x9;&#x9;INT&#x9;&#x9;NOT NULL IDENTITY(1,1),&#xA;&#x9;CustomerKey&#x9;&#x9;INT&#x9;&#x9;NOT NULL,&#xA;&#x9;BranchKey&#x9;&#x9;INT&#x9;&#x9;NOT NULL,&#xA;&#x9;CourseKey&#x9;&#x9;INT&#x9;&#x9;NOT NULL,&#xA;&#x9;TimeKey&#x9;&#x9;&#x9;INT&#x9;&#x9;NOT NULL,&#xA;&#x9;TotalUsage&#x9;&#x9;DATETIME&#x9;NOT NULL,&#xA;&#x9;CONSTRAINT PK_Usage&#x9;PRIMARY KEY (UsageKey)&#xA;);&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable

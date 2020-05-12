@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Package1"
   DTS:PackageType="5"
-  DTS:VersionBuild="38"
-  DTS:VersionGUID="{2215AE40-4513-46F2-90E3-9D2543FE072B}">
+  DTS:VersionBuild="49"
+  DTS:VersionGUID="{3363C121-6968-4A56-AA6B-E10B17B1A0E2}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -39,6 +39,57 @@
   </DTS:ConnectionManagers>
   <DTS:Variables />
   <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Build Fact Maintenance"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{47f282e5-d5f3-4710-9557-543b24fb9973}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Build Fact Maintenance"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{C282F175-352E-4D46-AC39-03FA513B3CF3}"
+          SQLTask:SqlStatementSource="insert into [GymDestination].[dbo].[Fact_Maintenance] (EquipmentKey, BranchKey, TimeKey, DimMaintenanceKey, Costs, MaintenanceNo)&#xA;SELECT main.Equip_ID, branch.Branch_ID, dim_time.TimeKey, main.Main_ID, main.Main_cost Costs, count(Main_ID) Main_no&#xA;FROM [Gym].[dbo].[Mas_Employee] employee, [Gym].[dbo].[Tran_Maintenance] main, [Gym].[dbo].[Mas_Equipment] equip, [Gym].[dbo].[Mas_Branch] branch, [GymDestination].[dbo].[Dim_Time] dim_time&#xA;WHERE main.Equip_ID = equip.Equip_ID&#xA;AND main.Main_ID = employee.Emp_ID&#xA;AND employee.Branch_ID = branch.Branch_ID&#xA;AND main.Main_date = dim_time.TimeDate&#xA;GROUP BY main.Equip_ID, branch.Branch_ID, dim_time.TimeKey, main.Main_ID, main.Main_cost" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Build Fact Sales"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{c26b317d-19ea-4e6e-9dad-cb78577fea62}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Build Fact Sales"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{C282F175-352E-4D46-AC39-03FA513B3CF3}"
+          SQLTask:SqlStatementSource="INSERT INTO [GymDestination].[dbo].[Fact_Sales] (CustomerKey, TimeKey, BranchKey, CourseKey, KMSales)&#xA;SELECT cust.Cust_ID, dim_time.TimeKey, branch.Branch_ID, course.Course_ID, payment.Pay_amount&#xA;FROM [Gym].[dbo].[Mas_Customer] cust, [GymDestination].[dbo].[Dim_Time] dim_time, [Gym].[dbo].[Mas_Branch] branch, [Gym].[dbo].[Mas_Course] course, [Gym].[dbo].[Mas_Employee] employee, [Gym].[dbo].[Tran_Enrollment] enroll, [Gym].[dbo].[Tran_Payment] payment&#xA;WHERE payment.Cust_ID = cust.Cust_ID&#xA;AND payment.Pay_date = dim_time.TimeDate&#xA;AND payment.Emp_ID = employee.Emp_ID&#xA;AND payment.Enroll_ID = enroll.Enroll_ID&#xA;AND employee.Branch_ID = branch.Branch_ID&#xA;AND enroll.Course_ID = course.Course_ID" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Build Fact Usage"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{ef2a7de4-b82d-4e0c-984c-de0da4001140}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Build Fact Usage"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{C282F175-352E-4D46-AC39-03FA513B3CF3}"
+          SQLTask:SqlStatementSource="insert into [GymDestination].[dbo].[Fact_Usage] (CustomerKey, CourseKey, BranchKey, TimeKey, TotalUsage)&#xA;SELECT cust.Cust_ID, course.Course_ID, branch.Branch_ID, dim_time.TimeKey,DATEADD(ms, SUM(DATEDIFF(ms, '00:00:00.000', usage.Usage_time)), '00:00:00.000') as Total_usage&#xA;FROM [Gym].[dbo].[Mas_Branch] branch, [GymDestination].[dbo].[Dim_Time] dim_time, [Gym].[dbo].[Mas_Customer] cust, [Gym].[dbo].[Mas_Course] course, [Gym].[dbo].[Tran_Usage_Record] usage&#xA;WHERE usage.Cust_ID = cust.Cust_ID&#xA;AND usage.Course_ID = course.Course_ID&#xA;AND course.Branch_ID = branch.Branch_ID&#xA;AND usage.Usage_date = dim_time.TimeDate&#xA;GROUP BY cust.Cust_ID, course.Course_ID, branch.Branch_ID, dim_time.TimeKey;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
     <DTS:Executable
       DTS:refId="Package\Import Branch"
       DTS:CreationName="Microsoft.Pipeline"
@@ -1416,1182 +1467,6 @@ FROM [Gym].[dbo].[Mas_Equipment];</property>
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
-      DTS:refId="Package\Import Fact Maintenance"
-      DTS:CreationName="Microsoft.Pipeline"
-      DTS:Description="Data Flow Task"
-      DTS:DTSID="{9a9181dd-640f-4b38-a6fd-af2912c7b73a}"
-      DTS:ExecutableType="Microsoft.Pipeline"
-      DTS:LocaleID="-1"
-      DTS:ObjectName="Import Fact Maintenance"
-      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
-      <DTS:Variables />
-      <DTS:ObjectData>
-        <pipeline
-          version="1">
-          <components>
-            <component
-              refId="Package\Import Fact Maintenance\Fact_Maintenance"
-              componentClassID="Microsoft.OLEDBDestination"
-              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
-              description="OLE DB Destination"
-              name="Fact_Maintenance"
-              usesDispositions="true"
-              version="4">
-              <properties>
-                <property
-                  dataType="System.Int32"
-                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the name of the database object used to open a rowset."
-                  name="OpenRowset">[dbo].[Fact_Maintenance]</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the variable that contains the name of the database object used to open a rowset."
-                  name="OpenRowsetVariable"></property>
-                <property
-                  dataType="System.String"
-                  description="The SQL command to be executed."
-                  name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the column code page to use when code page information is unavailable from the data source."
-                  name="DefaultCodePage">874</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Forces the use of the DefaultCodePage property value when describing character data."
-                  name="AlwaysUseDefaultCodePage">true</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the mode used to access the database."
-                  name="AccessMode"
-                  typeConverter="AccessMode">0</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
-                  name="FastLoadKeepIdentity">true</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
-                  name="FastLoadKeepNulls">false</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
-                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
-                  name="FastLoadMaxInsertCommitSize">2147483647</property>
-              </properties>
-              <connections>
-                <connection
-                  refId="Package\Import Fact Maintenance\Fact_Maintenance.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[DW data destination]"
-                  connectionManagerRefId="Package.ConnectionManagers[DW data destination]"
-                  description="The OLE DB runtime connection used to access the database."
-                  name="OleDbConnection" />
-              </connections>
-              <inputs>
-                <input
-                  refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input]"
-                  errorOrTruncationOperation="Insert"
-                  errorRowDisposition="FailComponent"
-                  hasSideEffects="true"
-                  name="OLE DB Destination Input">
-                  <inputColumns>
-                    <inputColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].Columns[TimeKey]"
-                      cachedDataType="i4"
-                      cachedName="TimeKey"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[TimeKey]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[TimeKey]" />
-                    <inputColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].Columns[Main_ID]"
-                      cachedDataType="i4"
-                      cachedName="Main_ID"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[MainKey]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[Main_ID]" />
-                    <inputColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].Columns[Equip_ID]"
-                      cachedDataType="i4"
-                      cachedName="Equip_ID"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[EquipmentKey]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[Equip_ID]" />
-                    <inputColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].Columns[Branch_ID]"
-                      cachedDataType="i4"
-                      cachedName="Branch_ID"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[BranchKey]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[Branch_ID]" />
-                    <inputColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].Columns[Main_cost]"
-                      cachedDataType="i4"
-                      cachedName="Main_cost"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[Costs]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[Main_cost]" />
-                    <inputColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].Columns[MaintenanceKey]"
-                      cachedDataType="i4"
-                      cachedName="MaintenanceKey"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[DimMaintenanceKey]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[MaintenanceKey]" />
-                    <inputColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].Columns[MaintenanceNo]"
-                      cachedDataType="i4"
-                      cachedName="MaintenanceNo"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[MaintenanceNo]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[MaintenanceNo]" />
-                  </inputColumns>
-                  <externalMetadataColumns
-                    isUsed="True">
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[TimeKey]"
-                      dataType="i4"
-                      name="TimeKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[MainKey]"
-                      dataType="i4"
-                      name="MainKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[EquipmentKey]"
-                      dataType="i4"
-                      name="EquipmentKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[BranchKey]"
-                      dataType="i4"
-                      name="BranchKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[DimMaintenanceKey]"
-                      dataType="i4"
-                      name="DimMaintenanceKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[Costs]"
-                      dataType="i4"
-                      name="Costs" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input].ExternalColumns[MaintenanceNo]"
-                      dataType="i4"
-                      name="MaintenanceNo" />
-                  </externalMetadataColumns>
-                </input>
-              </inputs>
-              <outputs>
-                <output
-                  refId="Package\Import Fact Maintenance\Fact_Maintenance.Outputs[OLE DB Destination Error Output]"
-                  exclusionGroup="1"
-                  isErrorOut="true"
-                  name="OLE DB Destination Error Output"
-                  synchronousInputId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input]">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Maintenance\Fact_Maintenance.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
-                      name="ErrorCode"
-                      specialFlags="1" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Fact_Maintenance.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Maintenance\Fact_Maintenance.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
-                      name="ErrorColumn"
-                      specialFlags="2" />
-                  </outputColumns>
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
-            <component
-              refId="Package\Import Fact Maintenance\Source Fact Maintenance"
-              componentClassID="Microsoft.OLEDBSource"
-              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
-              description="OLE DB Source"
-              name="Source Fact Maintenance"
-              usesDispositions="true"
-              version="7">
-              <properties>
-                <property
-                  dataType="System.Int32"
-                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the name of the database object used to open a rowset."
-                  name="OpenRowset"></property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the variable that contains the name of the database object used to open a rowset."
-                  name="OpenRowsetVariable"></property>
-                <property
-                  dataType="System.String"
-                  description="The SQL command to be executed."
-                  name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT main.Equip_ID, branch.Branch_ID, dim_time.TimeKey, main.Main_ID, main.Main_cost, dimMain.MaintenanceKey, COUNT(main.Main_ID) AS MaintenanceNo
-FROM [Gym].[dbo].[Mas_Employee] employee, [Gym].[dbo].[Tran_Maintenance] main, [Gym].[dbo].[Mas_Equipment] equip, [Gym].[dbo].[Mas_Branch] branch, [Gym].[dbo].[Dim_Time] dim_time, [Gym].[dbo].[Dim_Maintenance] dimMain
-WHERE main.Equip_ID = equip.Equip_ID
-AND main.Main_ID = employee.Emp_ID
-AND employee.Branch_ID = branch.Branch_ID
-AND main.Main_date = dim_time.TimeDate
-AND dimMain.MaintenanceKey = main.Main_ID
-GROUP BY main.Equip_ID, branch.Branch_ID, dim_time.TimeKey, main.Main_ID, main.Main_cost, dimMain.MaintenanceKey</property>
-                <property
-                  dataType="System.String"
-                  description="The variable that contains the SQL command to be executed."
-                  name="SqlCommandVariable"></property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the column code page to use when code page information is unavailable from the data source."
-                  name="DefaultCodePage">1252</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Forces the use of the DefaultCodePage property value when describing character data."
-                  name="AlwaysUseDefaultCodePage">false</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the mode used to access the database."
-                  name="AccessMode"
-                  typeConverter="AccessMode">2</property>
-                <property
-                  dataType="System.String"
-                  description="The mappings between the parameters in the SQL command and variables."
-                  name="ParameterMapping"></property>
-              </properties>
-              <connections>
-                <connection
-                  refId="Package\Import Fact Maintenance\Source Fact Maintenance.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[Transaction data source]"
-                  connectionManagerRefId="Package.ConnectionManagers[Transaction data source]"
-                  description="The OLE DB runtime connection used to access the database."
-                  name="OleDbConnection" />
-              </connections>
-              <outputs>
-                <output
-                  refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output]"
-                  name="OLE DB Source Output">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[Equip_ID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[Equip_ID]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[Equip_ID]"
-                      name="Equip_ID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[Branch_ID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[Branch_ID]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[Branch_ID]"
-                      name="Branch_ID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[TimeKey]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[TimeKey]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[TimeKey]"
-                      name="TimeKey"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[Main_ID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[Main_ID]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[Main_ID]"
-                      name="Main_ID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[Main_cost]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[Main_cost]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[Main_cost]"
-                      name="Main_cost"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[MaintenanceKey]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[MaintenanceKey]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[MaintenanceKey]"
-                      name="MaintenanceKey"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[MaintenanceNo]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[MaintenanceNo]"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].Columns[MaintenanceNo]"
-                      name="MaintenanceNo"
-                      truncationRowDisposition="FailComponent" />
-                  </outputColumns>
-                  <externalMetadataColumns
-                    isUsed="True">
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[Equip_ID]"
-                      dataType="i4"
-                      name="Equip_ID" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[Branch_ID]"
-                      dataType="i4"
-                      name="Branch_ID" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[TimeKey]"
-                      dataType="i4"
-                      name="TimeKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[Main_ID]"
-                      dataType="i4"
-                      name="Main_ID" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[Main_cost]"
-                      dataType="i4"
-                      name="Main_cost" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[MaintenanceKey]"
-                      dataType="i4"
-                      name="MaintenanceKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output].ExternalColumns[MaintenanceNo]"
-                      dataType="i4"
-                      name="MaintenanceNo" />
-                  </externalMetadataColumns>
-                </output>
-                <output
-                  refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output]"
-                  isErrorOut="true"
-                  name="OLE DB Source Error Output">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[Equip_ID]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[Equip_ID]"
-                      name="Equip_ID" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[Branch_ID]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[Branch_ID]"
-                      name="Branch_ID" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[TimeKey]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[TimeKey]"
-                      name="TimeKey" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[Main_ID]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[Main_ID]"
-                      name="Main_ID" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[Main_cost]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[Main_cost]"
-                      name="Main_cost" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[MaintenanceKey]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[MaintenanceKey]"
-                      name="MaintenanceKey" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[MaintenanceNo]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[MaintenanceNo]"
-                      name="MaintenanceNo" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
-                      name="ErrorCode"
-                      specialFlags="1" />
-                    <outputColumn
-                      refId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
-                      name="ErrorColumn"
-                      specialFlags="2" />
-                  </outputColumns>
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
-          </components>
-          <paths>
-            <path
-              refId="Package\Import Fact Maintenance.Paths[OLE DB Source Output]"
-              endId="Package\Import Fact Maintenance\Fact_Maintenance.Inputs[OLE DB Destination Input]"
-              name="OLE DB Source Output"
-              startId="Package\Import Fact Maintenance\Source Fact Maintenance.Outputs[OLE DB Source Output]" />
-          </paths>
-        </pipeline>
-      </DTS:ObjectData>
-    </DTS:Executable>
-    <DTS:Executable
-      DTS:refId="Package\Import Fact Sales"
-      DTS:CreationName="Microsoft.Pipeline"
-      DTS:Description="Data Flow Task"
-      DTS:DTSID="{baed6775-eec1-4942-88ea-2a7eced476f3}"
-      DTS:ExecutableType="Microsoft.Pipeline"
-      DTS:LocaleID="-1"
-      DTS:ObjectName="Import Fact Sales"
-      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
-      <DTS:Variables />
-      <DTS:ObjectData>
-        <pipeline
-          version="1">
-          <components>
-            <component
-              refId="Package\Import Fact Sales\Fact_Sales"
-              componentClassID="Microsoft.OLEDBDestination"
-              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
-              description="OLE DB Destination"
-              name="Fact_Sales"
-              usesDispositions="true"
-              version="4">
-              <properties>
-                <property
-                  dataType="System.Int32"
-                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the name of the database object used to open a rowset."
-                  name="OpenRowset">[dbo].[Fact_Sales]</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the variable that contains the name of the database object used to open a rowset."
-                  name="OpenRowsetVariable"></property>
-                <property
-                  dataType="System.String"
-                  description="The SQL command to be executed."
-                  name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the column code page to use when code page information is unavailable from the data source."
-                  name="DefaultCodePage">874</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Forces the use of the DefaultCodePage property value when describing character data."
-                  name="AlwaysUseDefaultCodePage">true</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the mode used to access the database."
-                  name="AccessMode"
-                  typeConverter="AccessMode">0</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
-                  name="FastLoadKeepIdentity">true</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
-                  name="FastLoadKeepNulls">false</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
-                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
-                  name="FastLoadMaxInsertCommitSize">2147483647</property>
-              </properties>
-              <connections>
-                <connection
-                  refId="Package\Import Fact Sales\Fact_Sales.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[DW data destination]"
-                  connectionManagerRefId="Package.ConnectionManagers[DW data destination]"
-                  description="The OLE DB runtime connection used to access the database."
-                  name="OleDbConnection" />
-              </connections>
-              <inputs>
-                <input
-                  refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input]"
-                  errorOrTruncationOperation="Insert"
-                  errorRowDisposition="FailComponent"
-                  hasSideEffects="true"
-                  name="OLE DB Destination Input">
-                  <inputColumns>
-                    <inputColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].Columns[TimeKey]"
-                      cachedDataType="i4"
-                      cachedName="TimeKey"
-                      externalMetadataColumnId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[TimeKey]"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[TimeKey]" />
-                    <inputColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].Columns[Main_ID]"
-                      cachedDataType="i4"
-                      cachedName="Main_ID"
-                      externalMetadataColumnId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[MainKey]"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Main_ID]" />
-                    <inputColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].Columns[Branch_ID]"
-                      cachedDataType="i4"
-                      cachedName="Branch_ID"
-                      externalMetadataColumnId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[BranchKey]"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Branch_ID]" />
-                    <inputColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].Columns[Course_ID]"
-                      cachedDataType="i4"
-                      cachedName="Course_ID"
-                      externalMetadataColumnId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[CourseKey]"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Course_ID]" />
-                    <inputColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].Columns[Cust_ID]"
-                      cachedDataType="i4"
-                      cachedName="Cust_ID"
-                      externalMetadataColumnId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[CustomerKey]"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Cust_ID]" />
-                    <inputColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].Columns[Pay_amount]"
-                      cachedDataType="i4"
-                      cachedName="Pay_amount"
-                      externalMetadataColumnId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[KMSales]"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Pay_amount]" />
-                  </inputColumns>
-                  <externalMetadataColumns
-                    isUsed="True">
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[TimeKey]"
-                      dataType="i4"
-                      name="TimeKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[MainKey]"
-                      dataType="i4"
-                      name="MainKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[BranchKey]"
-                      dataType="i4"
-                      name="BranchKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[CourseKey]"
-                      dataType="i4"
-                      name="CourseKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[CustomerKey]"
-                      dataType="i4"
-                      name="CustomerKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[KMSales]"
-                      dataType="i4"
-                      name="KMSales" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input].ExternalColumns[SalesKey]"
-                      dataType="i4"
-                      name="SalesKey" />
-                  </externalMetadataColumns>
-                </input>
-              </inputs>
-              <outputs>
-                <output
-                  refId="Package\Import Fact Sales\Fact_Sales.Outputs[OLE DB Destination Error Output]"
-                  exclusionGroup="1"
-                  isErrorOut="true"
-                  name="OLE DB Destination Error Output"
-                  synchronousInputId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input]">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Sales\Fact_Sales.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
-                      name="ErrorCode"
-                      specialFlags="1" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Fact_Sales.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Sales\Fact_Sales.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
-                      name="ErrorColumn"
-                      specialFlags="2" />
-                  </outputColumns>
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
-            <component
-              refId="Package\Import Fact Sales\Source Fact Sales"
-              componentClassID="Microsoft.OLEDBSource"
-              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
-              description="OLE DB Source"
-              name="Source Fact Sales"
-              usesDispositions="true"
-              version="7">
-              <properties>
-                <property
-                  dataType="System.Int32"
-                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the name of the database object used to open a rowset."
-                  name="OpenRowset"></property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the variable that contains the name of the database object used to open a rowset."
-                  name="OpenRowsetVariable"></property>
-                <property
-                  dataType="System.String"
-                  description="The SQL command to be executed."
-                  name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT  main.Main_ID ,cust.Cust_ID, dim_time.TimeKey, branch.Branch_ID, course.Course_ID, payment.Pay_amount
-FROM [Gym].[dbo].[Mas_Customer] cust, [Gym].[dbo].[Dim_Time] dim_time, [Gym].[dbo].[Mas_Branch] branch, [Gym].[dbo].[Mas_Course] course, [Gym].[dbo].[Mas_Employee] employee, 
-                         [Gym].[dbo].[Tran_Enrollment] enroll, [Gym].[dbo].[Tran_Payment] payment, [Gym].[dbo].[Tran_Maintenance] main
-WHERE        payment.Cust_ID = cust.Cust_ID AND payment.Pay_date = dim_time.TimeDate AND payment.Emp_ID = employee.Emp_ID AND payment.Enroll_ID = enroll.Enroll_ID AND employee.Branch_ID = branch.Branch_ID AND 
-                         enroll.Course_ID = course.Course_ID AND employee.Emp_ID = main.Emp_ID</property>
-                <property
-                  dataType="System.String"
-                  description="The variable that contains the SQL command to be executed."
-                  name="SqlCommandVariable"></property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the column code page to use when code page information is unavailable from the data source."
-                  name="DefaultCodePage">1252</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Forces the use of the DefaultCodePage property value when describing character data."
-                  name="AlwaysUseDefaultCodePage">false</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the mode used to access the database."
-                  name="AccessMode"
-                  typeConverter="AccessMode">2</property>
-                <property
-                  dataType="System.String"
-                  description="The mappings between the parameters in the SQL command and variables."
-                  name="ParameterMapping"></property>
-              </properties>
-              <connections>
-                <connection
-                  refId="Package\Import Fact Sales\Source Fact Sales.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[Transaction data source]"
-                  connectionManagerRefId="Package.ConnectionManagers[Transaction data source]"
-                  description="The OLE DB runtime connection used to access the database."
-                  name="OleDbConnection" />
-              </connections>
-              <outputs>
-                <output
-                  refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output]"
-                  name="OLE DB Source Output">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Branch_ID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].ExternalColumns[Branch_ID]"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Branch_ID]"
-                      name="Branch_ID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[TimeKey]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].ExternalColumns[TimeKey]"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[TimeKey]"
-                      name="TimeKey"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Cust_ID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].ExternalColumns[Cust_ID]"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Cust_ID]"
-                      name="Cust_ID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Course_ID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].ExternalColumns[Course_ID]"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Course_ID]"
-                      name="Course_ID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Pay_amount]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].ExternalColumns[Pay_amount]"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Pay_amount]"
-                      name="Pay_amount"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Main_ID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].ExternalColumns[Main_ID]"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].Columns[Main_ID]"
-                      name="Main_ID"
-                      truncationRowDisposition="FailComponent" />
-                  </outputColumns>
-                  <externalMetadataColumns
-                    isUsed="True">
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].ExternalColumns[Branch_ID]"
-                      dataType="i4"
-                      name="Branch_ID" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].ExternalColumns[TimeKey]"
-                      dataType="i4"
-                      name="TimeKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].ExternalColumns[Cust_ID]"
-                      dataType="i4"
-                      name="Cust_ID" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].ExternalColumns[Course_ID]"
-                      dataType="i4"
-                      name="Course_ID" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].ExternalColumns[Pay_amount]"
-                      dataType="i4"
-                      name="Pay_amount" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output].ExternalColumns[Main_ID]"
-                      dataType="i4"
-                      name="Main_ID" />
-                  </externalMetadataColumns>
-                </output>
-                <output
-                  refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output]"
-                  isErrorOut="true"
-                  name="OLE DB Source Error Output">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[Main_ID]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[Main_ID]"
-                      name="Main_ID" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[Cust_ID]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[Cust_ID]"
-                      name="Cust_ID" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[Branch_ID]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[Branch_ID]"
-                      name="Branch_ID" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[TimeKey]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[TimeKey]"
-                      name="TimeKey" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[Course_ID]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[Course_ID]"
-                      name="Course_ID" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[Pay_amount]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[Pay_amount]"
-                      name="Pay_amount" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
-                      name="ErrorCode"
-                      specialFlags="1" />
-                    <outputColumn
-                      refId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
-                      name="ErrorColumn"
-                      specialFlags="2" />
-                  </outputColumns>
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
-          </components>
-          <paths>
-            <path
-              refId="Package\Import Fact Sales.Paths[OLE DB Source Output]"
-              endId="Package\Import Fact Sales\Fact_Sales.Inputs[OLE DB Destination Input]"
-              name="OLE DB Source Output"
-              startId="Package\Import Fact Sales\Source Fact Sales.Outputs[OLE DB Source Output]" />
-          </paths>
-        </pipeline>
-      </DTS:ObjectData>
-    </DTS:Executable>
-    <DTS:Executable
-      DTS:refId="Package\Import Fact Usage"
-      DTS:CreationName="Microsoft.Pipeline"
-      DTS:Description="Data Flow Task"
-      DTS:DTSID="{aa7f7ffc-4fd6-4572-b00c-3350a7580a4b}"
-      DTS:ExecutableType="Microsoft.Pipeline"
-      DTS:LocaleID="-1"
-      DTS:ObjectName="Import Fact Usage"
-      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
-      <DTS:Variables />
-      <DTS:ObjectData>
-        <pipeline
-          version="1">
-          <components>
-            <component
-              refId="Package\Import Fact Usage\Fact_Usage"
-              componentClassID="Microsoft.OLEDBDestination"
-              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
-              description="OLE DB Destination"
-              name="Fact_Usage"
-              usesDispositions="true"
-              version="4">
-              <properties>
-                <property
-                  dataType="System.Int32"
-                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the name of the database object used to open a rowset."
-                  name="OpenRowset">[dbo].[Fact_Usage]</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the variable that contains the name of the database object used to open a rowset."
-                  name="OpenRowsetVariable"></property>
-                <property
-                  dataType="System.String"
-                  description="The SQL command to be executed."
-                  name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the column code page to use when code page information is unavailable from the data source."
-                  name="DefaultCodePage">874</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Forces the use of the DefaultCodePage property value when describing character data."
-                  name="AlwaysUseDefaultCodePage">true</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the mode used to access the database."
-                  name="AccessMode"
-                  typeConverter="AccessMode">0</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
-                  name="FastLoadKeepIdentity">true</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
-                  name="FastLoadKeepNulls">false</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
-                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
-                  name="FastLoadMaxInsertCommitSize">2147483647</property>
-              </properties>
-              <connections>
-                <connection
-                  refId="Package\Import Fact Usage\Fact_Usage.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[DW data destination]"
-                  connectionManagerRefId="Package.ConnectionManagers[DW data destination]"
-                  description="The OLE DB runtime connection used to access the database."
-                  name="OleDbConnection" />
-              </connections>
-              <inputs>
-                <input
-                  refId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input]"
-                  errorOrTruncationOperation="Insert"
-                  errorRowDisposition="FailComponent"
-                  hasSideEffects="true"
-                  name="OLE DB Destination Input">
-                  <inputColumns>
-                    <inputColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].Columns[TimeKey]"
-                      cachedDataType="i4"
-                      cachedName="TimeKey"
-                      externalMetadataColumnId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].ExternalColumns[TimeKey]"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[TimeKey]" />
-                    <inputColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].Columns[Branch_ID]"
-                      cachedDataType="i4"
-                      cachedName="Branch_ID"
-                      externalMetadataColumnId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].ExternalColumns[BranchKey]"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[Branch_ID]" />
-                    <inputColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].Columns[Cust_ID]"
-                      cachedDataType="i4"
-                      cachedName="Cust_ID"
-                      externalMetadataColumnId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].ExternalColumns[CustomerKey]"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[Cust_ID]" />
-                    <inputColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].Columns[Course_ID]"
-                      cachedDataType="i4"
-                      cachedName="Course_ID"
-                      externalMetadataColumnId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].ExternalColumns[CourseKey]"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[Course_ID]" />
-                    <inputColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].Columns[Total_usage]"
-                      cachedDataType="i4"
-                      cachedName="Total_usage"
-                      externalMetadataColumnId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].ExternalColumns[TotalUsage]"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[Total_usage]" />
-                  </inputColumns>
-                  <externalMetadataColumns
-                    isUsed="True">
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].ExternalColumns[TimeKey]"
-                      dataType="i4"
-                      name="TimeKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].ExternalColumns[BranchKey]"
-                      dataType="i4"
-                      name="BranchKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].ExternalColumns[UsageKey]"
-                      dataType="i4"
-                      name="UsageKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].ExternalColumns[CustomerKey]"
-                      dataType="i4"
-                      name="CustomerKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].ExternalColumns[CourseKey]"
-                      dataType="i4"
-                      name="CourseKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input].ExternalColumns[TotalUsage]"
-                      dataType="i4"
-                      name="TotalUsage" />
-                  </externalMetadataColumns>
-                </input>
-              </inputs>
-              <outputs>
-                <output
-                  refId="Package\Import Fact Usage\Fact_Usage.Outputs[OLE DB Destination Error Output]"
-                  exclusionGroup="1"
-                  isErrorOut="true"
-                  name="OLE DB Destination Error Output"
-                  synchronousInputId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input]">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Usage\Fact_Usage.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
-                      name="ErrorCode"
-                      specialFlags="1" />
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Fact_Usage.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Usage\Fact_Usage.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
-                      name="ErrorColumn"
-                      specialFlags="2" />
-                  </outputColumns>
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
-            <component
-              refId="Package\Import Fact Usage\Source Fact Usage"
-              componentClassID="Microsoft.OLEDBSource"
-              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
-              description="OLE DB Source"
-              name="Source Fact Usage"
-              usesDispositions="true"
-              version="7">
-              <properties>
-                <property
-                  dataType="System.Int32"
-                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the name of the database object used to open a rowset."
-                  name="OpenRowset"></property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the variable that contains the name of the database object used to open a rowset."
-                  name="OpenRowsetVariable"></property>
-                <property
-                  dataType="System.String"
-                  description="The SQL command to be executed."
-                  name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT cust.Cust_ID, course.Course_ID, branch.Branch_ID, dim_time.TimeKey, 1 as Total_usage
-FROM [Gym].[dbo].[Mas_Branch] branch, [Gym].[dbo].[Dim_Time] dim_time, [Gym].[dbo].[Mas_Customer] cust, [Gym].[dbo].[Mas_Course] course, [Gym].[dbo].[Tran_Usage_Record] usage
-WHERE usage.Cust_ID = cust.Cust_ID
-AND usage.Course_ID = course.Course_ID
-AND course.Branch_ID = branch.Branch_ID
-AND usage.Usage_date = dim_time.TimeDate</property>
-                <property
-                  dataType="System.String"
-                  description="The variable that contains the SQL command to be executed."
-                  name="SqlCommandVariable"></property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the column code page to use when code page information is unavailable from the data source."
-                  name="DefaultCodePage">1252</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Forces the use of the DefaultCodePage property value when describing character data."
-                  name="AlwaysUseDefaultCodePage">false</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the mode used to access the database."
-                  name="AccessMode"
-                  typeConverter="AccessMode">2</property>
-                <property
-                  dataType="System.String"
-                  description="The mappings between the parameters in the SQL command and variables."
-                  name="ParameterMapping"></property>
-              </properties>
-              <connections>
-                <connection
-                  refId="Package\Import Fact Usage\Source Fact Usage.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[Transaction data source]"
-                  connectionManagerRefId="Package.ConnectionManagers[Transaction data source]"
-                  description="The OLE DB runtime connection used to access the database."
-                  name="OleDbConnection" />
-              </connections>
-              <outputs>
-                <output
-                  refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output]"
-                  name="OLE DB Source Output">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[Branch_ID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].ExternalColumns[Branch_ID]"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[Branch_ID]"
-                      name="Branch_ID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[TimeKey]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].ExternalColumns[TimeKey]"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[TimeKey]"
-                      name="TimeKey"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[Cust_ID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].ExternalColumns[Cust_ID]"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[Cust_ID]"
-                      name="Cust_ID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[Course_ID]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].ExternalColumns[Course_ID]"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[Course_ID]"
-                      name="Course_ID"
-                      truncationRowDisposition="FailComponent" />
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[Total_usage]"
-                      dataType="i4"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].ExternalColumns[Total_usage]"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].Columns[Total_usage]"
-                      name="Total_usage"
-                      truncationRowDisposition="FailComponent" />
-                  </outputColumns>
-                  <externalMetadataColumns
-                    isUsed="True">
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].ExternalColumns[Branch_ID]"
-                      dataType="i4"
-                      name="Branch_ID" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].ExternalColumns[TimeKey]"
-                      dataType="i4"
-                      name="TimeKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].ExternalColumns[Cust_ID]"
-                      dataType="i4"
-                      name="Cust_ID" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].ExternalColumns[Course_ID]"
-                      dataType="i4"
-                      name="Course_ID" />
-                    <externalMetadataColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output].ExternalColumns[Total_usage]"
-                      dataType="i4"
-                      name="Total_usage" />
-                  </externalMetadataColumns>
-                </output>
-                <output
-                  refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output]"
-                  isErrorOut="true"
-                  name="OLE DB Source Error Output">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[Cust_ID]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[Cust_ID]"
-                      name="Cust_ID" />
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[Course_ID]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[Course_ID]"
-                      name="Course_ID" />
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[Branch_ID]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[Branch_ID]"
-                      name="Branch_ID" />
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[TimeKey]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[TimeKey]"
-                      name="TimeKey" />
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[Total_usage]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[Total_usage]"
-                      name="Total_usage" />
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
-                      name="ErrorCode"
-                      specialFlags="1" />
-                    <outputColumn
-                      refId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
-                      dataType="i4"
-                      lineageId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
-                      name="ErrorColumn"
-                      specialFlags="2" />
-                  </outputColumns>
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
-          </components>
-          <paths>
-            <path
-              refId="Package\Import Fact Usage.Paths[OLE DB Source Output]"
-              endId="Package\Import Fact Usage\Fact_Usage.Inputs[OLE DB Destination Input]"
-              name="OLE DB Source Output"
-              startId="Package\Import Fact Usage\Source Fact Usage.Outputs[OLE DB Source Output]" />
-          </paths>
-        </pipeline>
-      </DTS:ObjectData>
-    </DTS:Executable>
-    <DTS:Executable
       DTS:refId="Package\Import Maintenance"
       DTS:CreationName="Microsoft.Pipeline"
       DTS:Description="Data Flow Task"
@@ -3161,6 +2036,14 @@ SELECT DISTINCT [Usage_date]
       DTS:ObjectName="Constraint 1"
       DTS:To="Package\Import Customer" />
     <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 10]"
+      DTS:CreationName=""
+      DTS:DTSID="{B4020888-E9E7-4282-9293-BAEB88EE2980}"
+      DTS:From="Package\Build Fact Maintenance"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 10"
+      DTS:To="Package\Build Fact Sales" />
+    <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint 2]"
       DTS:CreationName=""
       DTS:DTSID="{6D471958-F055-4AB4-8363-36ED23C5FDC8}"
@@ -3185,29 +2068,21 @@ SELECT DISTINCT [Usage_date]
       DTS:ObjectName="Constraint 4"
       DTS:To="Package\Import Time" />
     <DTS:PrecedenceConstraint
-      DTS:refId="Package.PrecedenceConstraints[Constraint 5]"
+      DTS:refId="Package.PrecedenceConstraints[Constraint 8]"
       DTS:CreationName=""
-      DTS:DTSID="{02ADCA94-857C-4B85-B623-D46E3D8AE934}"
+      DTS:DTSID="{1BC01A1C-D69E-4180-A1D7-ADDDFD7D798B}"
       DTS:From="Package\Import Time"
       DTS:LogicalAnd="True"
-      DTS:ObjectName="Constraint 5"
-      DTS:To="Package\Import Fact Maintenance" />
+      DTS:ObjectName="Constraint 8"
+      DTS:To="Package\Build Fact Usage" />
     <DTS:PrecedenceConstraint
-      DTS:refId="Package.PrecedenceConstraints[Constraint 6]"
+      DTS:refId="Package.PrecedenceConstraints[Constraint 9]"
       DTS:CreationName=""
-      DTS:DTSID="{06B04CA0-7EAC-433A-9863-DEA080C8BF2A}"
-      DTS:From="Package\Import Fact Maintenance"
+      DTS:DTSID="{0AA3D477-B7C7-488A-9332-E6B2A7C590CB}"
+      DTS:From="Package\Build Fact Usage"
       DTS:LogicalAnd="True"
-      DTS:ObjectName="Constraint 6"
-      DTS:To="Package\Import Fact Usage" />
-    <DTS:PrecedenceConstraint
-      DTS:refId="Package.PrecedenceConstraints[Constraint 7]"
-      DTS:CreationName=""
-      DTS:DTSID="{D772B0FF-B491-439D-9357-3FC57D0D0F25}"
-      DTS:From="Package\Import Fact Usage"
-      DTS:LogicalAnd="True"
-      DTS:ObjectName="Constraint 7"
-      DTS:To="Package\Import Fact Sales" />
+      DTS:ObjectName="Constraint 9"
+      DTS:To="Package\Build Fact Maintenance" />
   </DTS:PrecedenceConstraints>
   <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
 <!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
@@ -3222,16 +2097,36 @@ SELECT DISTINCT [Usage_date]
       <GraphLayout
         Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
+          Size="163,42"
+          Id="Package\Build Fact Usage"
+          TopLeft="381,212" />
+        <NodeLayout
           Size="148,42"
           Id="Package\Import Branch"
-          TopLeft="22.5,5.5" />
+          TopLeft="59.5,5.5" />
         <NodeLayout
           Size="149,42"
           Id="Package\Import Course"
-          TopLeft="23,112" />
+          TopLeft="60,112" />
+        <NodeLayout
+          Size="161,42"
+          Id="Package\Import Customer"
+          TopLeft="292,6" />
+        <NodeLayout
+          Size="166,42"
+          Id="Package\Import Equipment"
+          TopLeft="290,113" />
+        <NodeLayout
+          Size="176,42"
+          Id="Package\Import Maintenance"
+          TopLeft="502,5" />
+        <NodeLayout
+          Size="170,42"
+          Id="Package\Import Time"
+          TopLeft="504,114" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
-          TopLeft="97,47.5">
+          TopLeft="134,47.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -3251,13 +2146,9 @@ SELECT DISTINCT [Usage_date]
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="161,42"
-          Id="Package\Import Customer"
-          TopLeft="255,6" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 1]"
-          TopLeft="121,112">
+          TopLeft="158,112">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -3289,13 +2180,9 @@ SELECT DISTINCT [Usage_date]
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="166,42"
-          Id="Package\Import Equipment"
-          TopLeft="253,113" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 2]"
-          TopLeft="361,48">
+          TopLeft="398,48">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -3327,13 +2214,9 @@ SELECT DISTINCT [Usage_date]
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="176,42"
-          Id="Package\Import Maintenance"
-          TopLeft="465,5" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 3]"
-          TopLeft="385.333333333333,113">
+          TopLeft="422.333333333333,113">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -3365,13 +2248,9 @@ SELECT DISTINCT [Usage_date]
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="170,42"
-          Id="Package\Import Time"
-          TopLeft="467,114" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 4]"
-          TopLeft="581,47">
+          TopLeft="618,47">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
@@ -3403,24 +2282,32 @@ SELECT DISTINCT [Usage_date]
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
-        <NodeLayout
-          Size="200,42"
-          Id="Package\Import Fact Maintenance"
-          TopLeft="453,204" />
         <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 5]"
-          TopLeft="552.5,156">
+          Id="Package.PrecedenceConstraints[Constraint 8]"
+          TopLeft="589,156">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="0,48"
+              EndConnector="-126.5,56"
               Start="0,0"
-              End="0,40.5">
+              End="-126.5,48.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,40.5" />
+                    End="0,24" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,24"
+                    Point2="0,28"
+                    Point3="-4,28" />
+                  <mssgle:LineSegment
+                    End="-122.5,28" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-122.5,28"
+                    Point2="-126.5,28"
+                    Point3="-126.5,32" />
+                  <mssgle:LineSegment
+                    End="-126.5,48.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -3430,27 +2317,23 @@ SELECT DISTINCT [Usage_date]
           </EdgeLayout.Labels>
         </EdgeLayout>
         <NodeLayout
-          Size="165,42"
-          Id="Package\Import Fact Sales"
-          TopLeft="257,260" />
-        <NodeLayout
-          Size="169,42"
-          Id="Package\Import Fact Usage"
-          TopLeft="20.5,205" />
+          Size="163,42"
+          Id="Package\Build Fact Maintenance"
+          TopLeft="5.5,207" />
         <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 6]"
-          TopLeft="453,222.666666666667">
+          Id="Package.PrecedenceConstraints[Constraint 9]"
+          TopLeft="381,230.5">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="-263.5,0"
+              EndConnector="-212.5,0"
               Start="0,0"
-              End="-256,0">
+              End="-205,0">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="-256,0" />
+                    End="-205,0" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -3459,32 +2342,36 @@ SELECT DISTINCT [Usage_date]
             <EdgeLabelCollection />
           </EdgeLayout.Labels>
         </EdgeLayout>
+        <NodeLayout
+          Size="163,42"
+          Id="Package\Build Fact Sales"
+          TopLeft="257.5,348" />
         <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 7]"
-          TopLeft="189.5,231.666666666667">
+          Id="Package.PrecedenceConstraints[Constraint 10]"
+          TopLeft="87,249">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="67.5,49.3333333333333"
+              EndConnector="252,99"
               Start="0,0"
-              End="60,49.3333333333333">
+              End="252,91.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="24.4862385321101,0" />
+                    End="0,45.5" />
                   <mssgle:CubicBezierSegment
-                    Point1="24.4862385321101,0"
-                    Point2="28.4862385321101,0"
-                    Point3="28.4862385321101,4" />
+                    Point1="0,45.5"
+                    Point2="0,49.5"
+                    Point3="4,49.5" />
                   <mssgle:LineSegment
-                    End="28.4862385321101,45.3333333333333" />
+                    End="248,49.5" />
                   <mssgle:CubicBezierSegment
-                    Point1="28.4862385321101,45.3333333333333"
-                    Point2="28.4862385321101,49.3333333333333"
-                    Point3="32.4862385321101,49.3333333333333" />
+                    Point1="248,49.5"
+                    Point2="252,49.5"
+                    Point3="252,53.5" />
                   <mssgle:LineSegment
-                    End="60,49.3333333333333" />
+                    End="252,91.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -3622,7 +2509,7 @@ SELECT DISTINCT [Usage_date]
     design-time-name="Package\Import Customer">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="152,42"
           Id="Package\Import Customer\Dim_Customer"
@@ -3650,7 +2537,9 @@ SELECT DISTINCT [Usage_date]
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -3681,15 +2570,15 @@ SELECT DISTINCT [Usage_date]
     design-time-name="Package\Import Equipment">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
-        <NodeLayout
-          Size="157,42"
-          Id="Package\Import Equipment\Dim_Equipment"
-          TopLeft="16.5,103.5" />
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="169,42"
           Id="Package\Import Equipment\Source Equipment"
           TopLeft="5.5,5.5" />
+        <NodeLayout
+          Size="157,42"
+          Id="Package\Import Equipment\Dim_Equipment"
+          TopLeft="16.5,103.5" />
         <EdgeLayout
           Id="Package\Import Equipment.Paths[OLE DB Source Output]"
           TopLeft="92.5,47.5">
@@ -3709,7 +2598,9 @@ SELECT DISTINCT [Usage_date]
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -3740,15 +2631,15 @@ SELECT DISTINCT [Usage_date]
     design-time-name="Package\Import Maintenance">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
-        <NodeLayout
-          Size="168,42"
-          Id="Package\Import Maintenance\Dim_Maintenance"
-          TopLeft="16.5,103.5" />
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="180,42"
           Id="Package\Import Maintenance\Source Maintenance"
           TopLeft="5.5,5.5" />
+        <NodeLayout
+          Size="168,42"
+          Id="Package\Import Maintenance\Dim_Maintenance"
+          TopLeft="16.5,103.5" />
         <EdgeLayout
           Id="Package\Import Maintenance.Paths[OLE DB Source Output]"
           TopLeft="98,47.5">
@@ -3768,7 +2659,9 @@ SELECT DISTINCT [Usage_date]
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -3799,15 +2692,15 @@ SELECT DISTINCT [Usage_date]
     design-time-name="Package\Import Time">
     <LayoutInfo>
       <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
-        <NodeLayout
-          Size="129,42"
-          Id="Package\Import Time\Dim_Time"
-          TopLeft="16.5,103.5" />
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
         <NodeLayout
           Size="141,42"
           Id="Package\Import Time\Source Time"
           TopLeft="5.5,5.5" />
+        <NodeLayout
+          Size="129,42"
+          Id="Package\Import Time\Dim_Time"
+          TopLeft="16.5,103.5" />
         <EdgeLayout
           Id="Package\Import Time.Paths[OLE DB Source Output]"
           TopLeft="78.5,47.5">
@@ -3827,7 +2720,9 @@ SELECT DISTINCT [Usage_date]
             </mssgle:Curve>
           </EdgeLayout.Curve>
           <EdgeLayout.Labels>
-            <EdgeLabelCollection />
+            <mssgm:EdgeLabel
+              BoundingBox="0,0,0,0"
+              RelativePosition="Any" />
           </EdgeLayout.Labels>
         </EdgeLayout>
       </GraphLayout>
@@ -3848,183 +2743,6 @@ SELECT DISTINCT [Usage_date]
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
     design-time-name="Package\Import Time\Source Time">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <TaskHost
-    design-time-name="Package\Import Fact Maintenance">
-    <LayoutInfo>
-      <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
-        <NodeLayout
-          Size="170,42"
-          Id="Package\Import Fact Maintenance\Fact_Maintenance"
-          TopLeft="16.5,103.5" />
-        <NodeLayout
-          Size="204,42"
-          Id="Package\Import Fact Maintenance\Source Fact Maintenance"
-          TopLeft="5.5,5.5" />
-        <EdgeLayout
-          Id="Package\Import Fact Maintenance.Paths[OLE DB Source Output]"
-          TopLeft="104.5,47.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,56"
-              Start="0,0"
-              End="0,48.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,48.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-      </GraphLayout>
-    </LayoutInfo>
-  </TaskHost>
-  <PipelineComponentMetadata
-    design-time-name="Package\Import Fact Maintenance\Fact_Maintenance">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Import Fact Maintenance\Source Fact Maintenance">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <TaskHost
-    design-time-name="Package\Import Fact Sales">
-    <LayoutInfo>
-      <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
-        <NodeLayout
-          Size="134,42"
-          Id="Package\Import Fact Sales\Fact_Sales"
-          TopLeft="16.5,103.5" />
-        <NodeLayout
-          Size="169,42"
-          Id="Package\Import Fact Sales\Source Fact Sales"
-          TopLeft="5.5,5.5" />
-        <EdgeLayout
-          Id="Package\Import Fact Sales.Paths[OLE DB Source Output]"
-          TopLeft="86.75,47.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,56"
-              Start="0,0"
-              End="0,48.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,48.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-      </GraphLayout>
-    </LayoutInfo>
-  </TaskHost>
-  <PipelineComponentMetadata
-    design-time-name="Package\Import Fact Sales\Fact_Sales">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Import Fact Sales\Source Fact Sales">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <TaskHost
-    design-time-name="Package\Import Fact Usage">
-    <LayoutInfo>
-      <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
-        <NodeLayout
-          Size="138,42"
-          Id="Package\Import Fact Usage\Fact_Usage"
-          TopLeft="16.5,103.5" />
-        <NodeLayout
-          Size="173,42"
-          Id="Package\Import Fact Usage\Source Fact Usage"
-          TopLeft="5.5,5.5" />
-        <EdgeLayout
-          Id="Package\Import Fact Usage.Paths[OLE DB Source Output]"
-          TopLeft="88.75,47.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,56"
-              Start="0,0"
-              End="0,48.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,48.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-      </GraphLayout>
-    </LayoutInfo>
-  </TaskHost>
-  <PipelineComponentMetadata
-    design-time-name="Package\Import Fact Usage\Fact_Usage">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Import Fact Usage\Source Fact Usage">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
