@@ -11,8 +11,8 @@
   DTS:LocaleID="1033"
   DTS:ObjectName="Package1"
   DTS:PackageType="5"
-  DTS:VersionBuild="50"
-  DTS:VersionGUID="{92E34B20-4862-4C2B-8B25-378C10F87599}">
+  DTS:VersionBuild="53"
+  DTS:VersionGUID="{2D39F100-6102-4457-8720-0DBBB09F0C01}">
   <DTS:Property
     DTS:Name="PackageFormatVersion">8</DTS:Property>
   <DTS:ConnectionManagers>
@@ -88,6 +88,23 @@
         <SQLTask:SqlTaskData
           SQLTask:Connection="{C282F175-352E-4D46-AC39-03FA513B3CF3}"
           SQLTask:SqlStatementSource="insert into [GymDestination].[dbo].[Fact_Usage] (CustomerKey, CourseKey, BranchKey, TimeKey, TotalUsage)&#xA;SELECT cust.Cust_ID, course.Course_ID, branch.Branch_ID, dim_time.TimeKey,DATEADD(ms, SUM(DATEDIFF(ms, '00:00:00.000', usage.Usage_time)), '00:00:00.000') as Total_usage&#xA;FROM [Gym].[dbo].[Mas_Branch] branch, [GymDestination].[dbo].[Dim_Time] dim_time, [Gym].[dbo].[Mas_Customer] cust, [Gym].[dbo].[Mas_Course] course, [Gym].[dbo].[Tran_Usage_Record] usage&#xA;WHERE usage.Cust_ID = cust.Cust_ID&#xA;AND usage.Course_ID = course.Course_ID&#xA;AND course.Branch_ID = branch.Branch_ID&#xA;AND usage.Usage_date = dim_time.TimeDate&#xA;GROUP BY cust.Cust_ID, course.Course_ID, branch.Branch_ID, dim_time.TimeKey;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\Build Time"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{765b134d-587d-4b23-bc42-fb6ad2423c07}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Build Time"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2019; © 2019 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{C282F175-352E-4D46-AC39-03FA513B3CF3}"
+          SQLTask:SqlStatementSource="INSERT INTO [GymDestination].[dbo].[Dim_Time] (TimeDate, TimeDay, TimeMonth, TimeQuarter, TimeYear)&#xA;SELECT DISTINCT   [Pay_date], DAY([Pay_date]), MONTH([Pay_date]), DATEPART(QUARTER, [Pay_date]), YEAR([Pay_date])&#xA;  FROM [Gym].[dbo].[Tran_Payment]&#xA;UNION &#xA;SELECT DISTINCT [Order_date], DAY([Order_date]), MONTH([Order_date]), DATEPART(QUARTER, [Order_date]), YEAR([Order_date])&#xA;  FROM [Gym].[dbo].[Tran_Order]&#xA;UNION &#xA;SELECT DISTINCT [Main_date], DAY([Main_date]), MONTH([Main_date]), DATEPART(QUARTER, [Main_date]), YEAR([Main_date])&#xA;  FROM [Gym].[dbo].[Tran_Maintenance]&#xA;  UNION&#xA;SELECT DISTINCT [Usage_date], DAY([Usage_date]), MONTH([Usage_date]), DATEPART(QUARTER, [Usage_date]), YEAR([Usage_date])&#xA;  FROM [Gym].[dbo].[Tran_Usage_Record];&#xA;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
       </DTS:ObjectData>
     </DTS:Executable>
     <DTS:Executable
@@ -1739,284 +1756,6 @@ FROM [Gym].[dbo].[Tran_Maintenance];</property>
         </pipeline>
       </DTS:ObjectData>
     </DTS:Executable>
-    <DTS:Executable
-      DTS:refId="Package\Import Time"
-      DTS:CreationName="Microsoft.Pipeline"
-      DTS:Description="Data Flow Task"
-      DTS:DTSID="{b272b3d5-1405-4f37-8a4a-f24298542d8a}"
-      DTS:ExecutableType="Microsoft.Pipeline"
-      DTS:LocaleID="-1"
-      DTS:ObjectName="Import Time"
-      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
-      <DTS:Variables />
-      <DTS:ObjectData>
-        <pipeline
-          version="1">
-          <components>
-            <component
-              refId="Package\Import Time\Dim_Time"
-              componentClassID="Microsoft.OLEDBDestination"
-              contactInfo="OLE DB Destination;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
-              description="OLE DB Destination"
-              name="Dim_Time"
-              usesDispositions="true"
-              version="4">
-              <properties>
-                <property
-                  dataType="System.Int32"
-                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the name of the database object used to open a rowset."
-                  name="OpenRowset">[dbo].[Dim_Time]</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the variable that contains the name of the database object used to open a rowset."
-                  name="OpenRowsetVariable"></property>
-                <property
-                  dataType="System.String"
-                  description="The SQL command to be executed."
-                  name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor"></property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the column code page to use when code page information is unavailable from the data source."
-                  name="DefaultCodePage">874</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Forces the use of the DefaultCodePage property value when describing character data."
-                  name="AlwaysUseDefaultCodePage">true</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the mode used to access the database."
-                  name="AccessMode"
-                  typeConverter="AccessMode">0</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
-                  name="FastLoadKeepIdentity">true</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destination. Applies only if fast load is turned on."
-                  name="FastLoadKeepNulls">false</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
-                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
-                  name="FastLoadMaxInsertCommitSize">2147483647</property>
-              </properties>
-              <connections>
-                <connection
-                  refId="Package\Import Time\Dim_Time.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[DW data destination]"
-                  connectionManagerRefId="Package.ConnectionManagers[DW data destination]"
-                  description="The OLE DB runtime connection used to access the database."
-                  name="OleDbConnection" />
-              </connections>
-              <inputs>
-                <input
-                  refId="Package\Import Time\Dim_Time.Inputs[OLE DB Destination Input]"
-                  errorOrTruncationOperation="Insert"
-                  errorRowDisposition="FailComponent"
-                  hasSideEffects="true"
-                  name="OLE DB Destination Input">
-                  <inputColumns>
-                    <inputColumn
-                      refId="Package\Import Time\Dim_Time.Inputs[OLE DB Destination Input].Columns[Pay_date]"
-                      cachedDataType="dbDate"
-                      cachedName="Pay_date"
-                      externalMetadataColumnId="Package\Import Time\Dim_Time.Inputs[OLE DB Destination Input].ExternalColumns[TimeDate]"
-                      lineageId="Package\Import Time\Source Time.Outputs[OLE DB Source Output].Columns[Pay_date]" />
-                  </inputColumns>
-                  <externalMetadataColumns
-                    isUsed="True">
-                    <externalMetadataColumn
-                      refId="Package\Import Time\Dim_Time.Inputs[OLE DB Destination Input].ExternalColumns[TimeKey]"
-                      dataType="i4"
-                      name="TimeKey" />
-                    <externalMetadataColumn
-                      refId="Package\Import Time\Dim_Time.Inputs[OLE DB Destination Input].ExternalColumns[TimeDate]"
-                      dataType="dbDate"
-                      name="TimeDate" />
-                    <externalMetadataColumn
-                      refId="Package\Import Time\Dim_Time.Inputs[OLE DB Destination Input].ExternalColumns[TimeDay]"
-                      codePage="874"
-                      dataType="str"
-                      length="40"
-                      name="TimeDay" />
-                    <externalMetadataColumn
-                      refId="Package\Import Time\Dim_Time.Inputs[OLE DB Destination Input].ExternalColumns[TimeMonth]"
-                      codePage="874"
-                      dataType="str"
-                      length="40"
-                      name="TimeMonth" />
-                    <externalMetadataColumn
-                      refId="Package\Import Time\Dim_Time.Inputs[OLE DB Destination Input].ExternalColumns[TimeQuarter]"
-                      dataType="i4"
-                      name="TimeQuarter" />
-                    <externalMetadataColumn
-                      refId="Package\Import Time\Dim_Time.Inputs[OLE DB Destination Input].ExternalColumns[TimeYear]"
-                      dataType="i4"
-                      name="TimeYear" />
-                  </externalMetadataColumns>
-                </input>
-              </inputs>
-              <outputs>
-                <output
-                  refId="Package\Import Time\Dim_Time.Outputs[OLE DB Destination Error Output]"
-                  exclusionGroup="1"
-                  isErrorOut="true"
-                  name="OLE DB Destination Error Output"
-                  synchronousInputId="Package\Import Time\Dim_Time.Inputs[OLE DB Destination Input]">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Import Time\Dim_Time.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
-                      dataType="i4"
-                      lineageId="Package\Import Time\Dim_Time.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
-                      name="ErrorCode"
-                      specialFlags="1" />
-                    <outputColumn
-                      refId="Package\Import Time\Dim_Time.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
-                      dataType="i4"
-                      lineageId="Package\Import Time\Dim_Time.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
-                      name="ErrorColumn"
-                      specialFlags="2" />
-                  </outputColumns>
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
-            <component
-              refId="Package\Import Time\Source Time"
-              componentClassID="Microsoft.OLEDBSource"
-              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SQL Server; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
-              description="OLE DB Source"
-              name="Source Time"
-              usesDispositions="true"
-              version="7">
-              <properties>
-                <property
-                  dataType="System.Int32"
-                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
-                  name="CommandTimeout">0</property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the name of the database object used to open a rowset."
-                  name="OpenRowset"></property>
-                <property
-                  dataType="System.String"
-                  description="Specifies the variable that contains the name of the database object used to open a rowset."
-                  name="OpenRowsetVariable"></property>
-                <property
-                  dataType="System.String"
-                  description="The SQL command to be executed."
-                  name="SqlCommand"
-                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor">SELECT DISTINCT   [Pay_date]
-  FROM [Gym].[dbo].[Tran_Payment]
-UNION 
-SELECT DISTINCT [Order_date]
-  FROM [Gym].[dbo].[Tran_Order]
-UNION 
-SELECT DISTINCT [Main_date]
-  FROM [Gym].[dbo].[Tran_Maintenance]
-  UNION
-SELECT DISTINCT [Usage_date]
-  FROM [Gym].[dbo].[Tran_Usage_Record];</property>
-                <property
-                  dataType="System.String"
-                  description="The variable that contains the SQL command to be executed."
-                  name="SqlCommandVariable"></property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the column code page to use when code page information is unavailable from the data source."
-                  name="DefaultCodePage">1252</property>
-                <property
-                  dataType="System.Boolean"
-                  description="Forces the use of the DefaultCodePage property value when describing character data."
-                  name="AlwaysUseDefaultCodePage">false</property>
-                <property
-                  dataType="System.Int32"
-                  description="Specifies the mode used to access the database."
-                  name="AccessMode"
-                  typeConverter="AccessMode">2</property>
-                <property
-                  dataType="System.String"
-                  description="The mappings between the parameters in the SQL command and variables."
-                  name="ParameterMapping"></property>
-              </properties>
-              <connections>
-                <connection
-                  refId="Package\Import Time\Source Time.Connections[OleDbConnection]"
-                  connectionManagerID="Package.ConnectionManagers[Transaction data source]"
-                  connectionManagerRefId="Package.ConnectionManagers[Transaction data source]"
-                  description="The OLE DB runtime connection used to access the database."
-                  name="OleDbConnection" />
-              </connections>
-              <outputs>
-                <output
-                  refId="Package\Import Time\Source Time.Outputs[OLE DB Source Output]"
-                  name="OLE DB Source Output">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Import Time\Source Time.Outputs[OLE DB Source Output].Columns[Pay_date]"
-                      dataType="dbDate"
-                      errorOrTruncationOperation="Conversion"
-                      errorRowDisposition="FailComponent"
-                      externalMetadataColumnId="Package\Import Time\Source Time.Outputs[OLE DB Source Output].ExternalColumns[Pay_date]"
-                      lineageId="Package\Import Time\Source Time.Outputs[OLE DB Source Output].Columns[Pay_date]"
-                      name="Pay_date"
-                      truncationRowDisposition="FailComponent" />
-                  </outputColumns>
-                  <externalMetadataColumns
-                    isUsed="True">
-                    <externalMetadataColumn
-                      refId="Package\Import Time\Source Time.Outputs[OLE DB Source Output].ExternalColumns[Pay_date]"
-                      dataType="dbDate"
-                      name="Pay_date" />
-                  </externalMetadataColumns>
-                </output>
-                <output
-                  refId="Package\Import Time\Source Time.Outputs[OLE DB Source Error Output]"
-                  isErrorOut="true"
-                  name="OLE DB Source Error Output">
-                  <outputColumns>
-                    <outputColumn
-                      refId="Package\Import Time\Source Time.Outputs[OLE DB Source Error Output].Columns[Pay_date]"
-                      dataType="dbDate"
-                      lineageId="Package\Import Time\Source Time.Outputs[OLE DB Source Error Output].Columns[Pay_date]"
-                      name="Pay_date" />
-                    <outputColumn
-                      refId="Package\Import Time\Source Time.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
-                      dataType="i4"
-                      lineageId="Package\Import Time\Source Time.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
-                      name="ErrorCode"
-                      specialFlags="1" />
-                    <outputColumn
-                      refId="Package\Import Time\Source Time.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
-                      dataType="i4"
-                      lineageId="Package\Import Time\Source Time.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
-                      name="ErrorColumn"
-                      specialFlags="2" />
-                  </outputColumns>
-                  <externalMetadataColumns />
-                </output>
-              </outputs>
-            </component>
-          </components>
-          <paths>
-            <path
-              refId="Package\Import Time.Paths[OLE DB Source Output]"
-              endId="Package\Import Time\Dim_Time.Inputs[OLE DB Destination Input]"
-              name="OLE DB Source Output"
-              startId="Package\Import Time\Source Time.Outputs[OLE DB Source Output]" />
-          </paths>
-        </pipeline>
-      </DTS:ObjectData>
-    </DTS:Executable>
   </DTS:Executables>
   <DTS:PrecedenceConstraints>
     <DTS:PrecedenceConstraint
@@ -2062,18 +1801,18 @@ SELECT DISTINCT [Usage_date]
     <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint 4]"
       DTS:CreationName=""
-      DTS:DTSID="{4E344554-186D-426E-B70D-1DD12419DA63}"
+      DTS:DTSID="{E91E8425-43A0-4C3A-AEFE-8885877AD4DD}"
       DTS:From="Package\Import Maintenance"
       DTS:LogicalAnd="True"
       DTS:ObjectName="Constraint 4"
-      DTS:To="Package\Import Time" />
+      DTS:To="Package\Build Time" />
     <DTS:PrecedenceConstraint
-      DTS:refId="Package.PrecedenceConstraints[Constraint 8]"
+      DTS:refId="Package.PrecedenceConstraints[Constraint 5]"
       DTS:CreationName=""
-      DTS:DTSID="{1BC01A1C-D69E-4180-A1D7-ADDDFD7D798B}"
-      DTS:From="Package\Import Time"
+      DTS:DTSID="{A3215BDA-AE82-4A25-B4A9-39A82BB0C1C9}"
+      DTS:From="Package\Build Time"
       DTS:LogicalAnd="True"
-      DTS:ObjectName="Constraint 8"
+      DTS:ObjectName="Constraint 5"
       DTS:To="Package\Build Fact Usage" />
     <DTS:PrecedenceConstraint
       DTS:refId="Package.PrecedenceConstraints[Constraint 9]"
@@ -2098,6 +1837,14 @@ SELECT DISTINCT [Usage_date]
         Capacity="32" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
         <NodeLayout
           Size="163,42"
+          Id="Package\Build Fact Maintenance"
+          TopLeft="161.5,212" />
+        <NodeLayout
+          Size="163,42"
+          Id="Package\Build Fact Sales"
+          TopLeft="321.5,335" />
+        <NodeLayout
+          Size="163,42"
           Id="Package\Build Fact Usage"
           TopLeft="421,206" />
         <NodeLayout
@@ -2120,10 +1867,6 @@ SELECT DISTINCT [Usage_date]
           Size="176,42"
           Id="Package\Import Maintenance"
           TopLeft="502,5" />
-        <NodeLayout
-          Size="170,42"
-          Id="Package\Import Time"
-          TopLeft="504,114" />
         <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint]"
           TopLeft="134,47.5">
@@ -2172,6 +1915,40 @@ SELECT DISTINCT [Usage_date]
                     Point3="214.5,-30.00796812749" />
                   <mssgle:LineSegment
                     End="214.5,-56.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 10]"
+          TopLeft="243,254">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="160,81"
+              Start="0,0"
+              End="160,73.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,36.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,36.5"
+                    Point2="0,40.5"
+                    Point3="4,40.5" />
+                  <mssgle:LineSegment
+                    End="156,40.5" />
+                  <mssgle:CubicBezierSegment
+                    Point1="156,40.5"
+                    Point2="160,40.5"
+                    Point3="160,44.5" />
+                  <mssgle:LineSegment
+                    End="160,73.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -2249,78 +2026,6 @@ SELECT DISTINCT [Usage_date]
           </EdgeLayout.Labels>
         </EdgeLayout>
         <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 4]"
-          TopLeft="618,47">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-29,67"
-              Start="0,0"
-              End="-29,59.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,47.1621621621622" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,47.1621621621622"
-                    Point2="0,51.1621621621622"
-                    Point3="-4,51.1621621621622" />
-                  <mssgle:LineSegment
-                    End="-25,51.1621621621622" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-25,51.1621621621622"
-                    Point2="-29,51.1621621621622"
-                    Point3="-29,55.1621621621622" />
-                  <mssgle:LineSegment
-                    End="-29,59.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 8]"
-          TopLeft="589,156">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="-86.5,50"
-              Start="0,0"
-              End="-86.5,42.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,21" />
-                  <mssgle:CubicBezierSegment
-                    Point1="0,21"
-                    Point2="0,25"
-                    Point3="-4,25" />
-                  <mssgle:LineSegment
-                    End="-82.5,25" />
-                  <mssgle:CubicBezierSegment
-                    Point1="-82.5,25"
-                    Point2="-86.5,25"
-                    Point3="-86.5,29" />
-                  <mssgle:LineSegment
-                    End="-86.5,42.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <EdgeLabelCollection />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-        <NodeLayout
-          Size="163,42"
-          Id="Package\Build Fact Maintenance"
-          TopLeft="161.5,212" />
-        <EdgeLayout
           Id="Package.PrecedenceConstraints[Constraint 9]"
           TopLeft="421,230">
           <EdgeLayout.Curve>
@@ -2344,34 +2049,68 @@ SELECT DISTINCT [Usage_date]
         </EdgeLayout>
         <NodeLayout
           Size="163,42"
-          Id="Package\Build Fact Sales"
-          TopLeft="321.5,335" />
+          Id="Package\Build Time"
+          TopLeft="559.5,118" />
         <EdgeLayout
-          Id="Package.PrecedenceConstraints[Constraint 10]"
-          TopLeft="243,254">
+          Id="Package.PrecedenceConstraints[Constraint 4]"
+          TopLeft="618,47">
           <EdgeLayout.Curve>
             <mssgle:Curve
               StartConnector="{assembly:Null}"
-              EndConnector="160,81"
+              EndConnector="23,71"
               Start="0,0"
-              End="160,73.5">
+              End="23,63.5">
               <mssgle:Curve.Segments>
                 <mssgle:SegmentCollection
                   Capacity="5">
                   <mssgle:LineSegment
-                    End="0,36.5" />
+                    End="0,24.7837837837838" />
                   <mssgle:CubicBezierSegment
-                    Point1="0,36.5"
-                    Point2="0,40.5"
-                    Point3="4,40.5" />
+                    Point1="0,24.7837837837838"
+                    Point2="0,28.7837837837838"
+                    Point3="4,28.7837837837838" />
                   <mssgle:LineSegment
-                    End="156,40.5" />
+                    End="19,28.7837837837838" />
                   <mssgle:CubicBezierSegment
-                    Point1="156,40.5"
-                    Point2="160,40.5"
-                    Point3="160,44.5" />
+                    Point1="19,28.7837837837838"
+                    Point2="23,28.7837837837838"
+                    Point3="23,32.7837837837838" />
                   <mssgle:LineSegment
-                    End="160,73.5" />
+                    End="23,63.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 5]"
+          TopLeft="641,160">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-138.5,46"
+              Start="0,0"
+              End="-138.5,38.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,19" />
+                  <mssgle:CubicBezierSegment
+                    Point1="0,19"
+                    Point2="0,23"
+                    Point3="-4,23" />
+                  <mssgle:LineSegment
+                    End="-134.5,23" />
+                  <mssgle:CubicBezierSegment
+                    Point1="-134.5,23"
+                    Point2="-138.5,23"
+                    Point3="-138.5,27" />
+                  <mssgle:LineSegment
+                    End="-138.5,38.5" />
                 </mssgle:SegmentCollection>
               </mssgle:Curve.Segments>
             </mssgle:Curve>
@@ -2682,67 +2421,6 @@ SELECT DISTINCT [Usage_date]
   </PipelineComponentMetadata>
   <PipelineComponentMetadata
     design-time-name="Package\Import Maintenance\Source Maintenance">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <TaskHost
-    design-time-name="Package\Import Time">
-    <LayoutInfo>
-      <GraphLayout
-        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:mssgm="clr-namespace:Microsoft.SqlServer.Graph.Model;assembly=Microsoft.SqlServer.Graph">
-        <NodeLayout
-          Size="141,42"
-          Id="Package\Import Time\Source Time"
-          TopLeft="5.5,5.5" />
-        <NodeLayout
-          Size="129,42"
-          Id="Package\Import Time\Dim_Time"
-          TopLeft="16.5,103.5" />
-        <EdgeLayout
-          Id="Package\Import Time.Paths[OLE DB Source Output]"
-          TopLeft="78.5,47.5">
-          <EdgeLayout.Curve>
-            <mssgle:Curve
-              StartConnector="{assembly:Null}"
-              EndConnector="0,56"
-              Start="0,0"
-              End="0,48.5">
-              <mssgle:Curve.Segments>
-                <mssgle:SegmentCollection
-                  Capacity="5">
-                  <mssgle:LineSegment
-                    End="0,48.5" />
-                </mssgle:SegmentCollection>
-              </mssgle:Curve.Segments>
-            </mssgle:Curve>
-          </EdgeLayout.Curve>
-          <EdgeLayout.Labels>
-            <mssgm:EdgeLabel
-              BoundingBox="0,0,0,0"
-              RelativePosition="Any" />
-          </EdgeLayout.Labels>
-        </EdgeLayout>
-      </GraphLayout>
-    </LayoutInfo>
-  </TaskHost>
-  <PipelineComponentMetadata
-    design-time-name="Package\Import Time\Dim_Time">
-    <Properties>
-      <Property>
-        <Name>DataSourceViewID</Name>
-      </Property>
-      <Property>
-        <Name>TableInfoObjectType</Name>
-        <Value
-          type="q2:string">Table</Value>
-      </Property>
-    </Properties>
-  </PipelineComponentMetadata>
-  <PipelineComponentMetadata
-    design-time-name="Package\Import Time\Source Time">
     <Properties>
       <Property>
         <Name>DataSourceViewID</Name>
