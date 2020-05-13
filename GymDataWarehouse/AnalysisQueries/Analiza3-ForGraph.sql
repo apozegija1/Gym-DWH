@@ -1,3 +1,7 @@
+/*
+	Prikaz ukupne prodaje za kurs 3 po satu u gradovima Colorado, Jersey i New York
+*/
+
 SELECT branch.BranchCity, datepart(hour, cast(fu.TotalUsage as time)) Total_Usage
 FROM Fact_Usage fu, Dim_Branch branch, Dim_Course course, Dim_Time time1
 WHERE fu.BranchKey = branch.BranchKey
