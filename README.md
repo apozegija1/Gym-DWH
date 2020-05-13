@@ -5,7 +5,10 @@ Gym-DWH je projekat u sklopu predmeta 'Skladišta podataka' na Elektrotehničkom
 ## Projekat sadrži:
 
   -  Izvještaj (opis problema, odgovarajuće dijagrame, opis kreiranja ETL procesa i primjer analize podataka)
+  -  Slajdovi za prezentaciju
+  -  ER dijagram
   -  Skripte za kreiranje tabela dimenzija i činjenica i za dodavanje constraint-a
+  -  Skripte za analizu i jedan graf kao rezultata analize urađen u Report Builderu
   -  Upiti za eksportovanje podataka
   -  ETL proces (kreiran u Microsoft Visual Studio)
   -  Relacijska baza podataka (.mdf)
