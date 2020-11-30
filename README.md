@@ -24,6 +24,8 @@ Gym-DWH je projekat u sklopu predmeta 'Skladišta podataka' na Elektrotehničkom
     3. Kliknuti "Test connection"
     4. Pokrenuti prvo paket createDW, a zatim importDW (*bitno*)
 
+Video for help, with step by step how to create ETL process in Visual Studio: https://www.youtube.com/watch?v=2oItzU-tuLA&t=3393s
+
 **Projekat implementirali:
 
 - Amra Požegija, 57-ST
